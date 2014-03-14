@@ -96,7 +96,7 @@ void ofxThreadedVideoPlayer::threadedFunction(){
 			}
 		}
 
-		ofSleepMillis(1);
+		ofSleepMillis(3); //mm todo!
 
 		if (player){
 			if(player->getIsMovieDone() && loopMode == OF_LOOP_NONE){
