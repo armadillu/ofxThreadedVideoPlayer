@@ -1,9 +1,7 @@
 #include "testApp.h"
 
 
-void testApp::videoIsReadyCallback(ofxThreadedVideoPlayer* whichVideo){
-	cout << "video " << whichVideo << " ready!" << endl;
-}
+
 
 void testApp::setup(){
 
@@ -13,17 +11,22 @@ void testApp::setup(){
 	ofBackground(22);
 	ofSetLineWidth(2);
 
-	TIME_SAMPLE_SET_FRAMERATE(60);
+	//TIME_SAMPLE_SET_FRAMERATE(60);
 
 	selectedVideo = -1;
 	debug = false;
-
 }
 
 
-void testApp::update(){
+void testApp::update(){}
 
+void testApp::videoIsReadyCallback(ofxThreadedVideoPlayerStatus &status){
+
+	cout << "video at "<< status.path << " is ready for playback!" << endl;
+	//start playback as soon as the video is ready!
+	status.player->play();
 }
+
 
 
 void testApp::draw(){
@@ -84,16 +87,22 @@ void testApp::draw(){
 }
 
 
+void testApp::addvideo(){
+
+	ofxThreadedVideoPlayer * v = new ofxThreadedVideoPlayer();
+	//we want to know when the movie will be ready to play!
+	ofAddListener(v->videoIsReadyEvent, this, &testApp::videoIsReadyCallback);
+	v->loadVideo("chaos.mov");
+	//v->play();
+	videos.push_back(v);
+}
+
 
 void testApp::keyPressed(int key){
 
 	switch (key) {
 		case ' ':{
-			ofxThreadedVideoPlayer * v = new ofxThreadedVideoPlayer();
-			v->setVideoReadyCallback(videoIsReadyCallback); //note how I setup a callback to be notified whenever the video is ready to play!
-			v->loadVideo("chaos.mov");
-			//v->play();
-			videos.push_back(v);
+			addvideo();
 			if(selectedVideo == -1) selectedVideo = 0;
 		}break;
 
@@ -136,44 +145,4 @@ void testApp::keyPressed(int key){
 		default:
 			break;
 	}
-}
-
-
-void testApp::keyReleased(int key){
-
-}
-
-
-void testApp::mouseMoved(int x, int y ){
-
-}
-
-
-void testApp::mouseDragged(int x, int y, int button){
-
-}
-
-
-void testApp::mousePressed(int x, int y, int button){
-
-}
-
-
-void testApp::mouseReleased(int x, int y, int button){
-
-}
-
-
-void testApp::windowResized(int w, int h){
-
-}
-
-
-void testApp::gotMessage(ofMessage msg){
-
-}
-
-
-void testApp::dragEvent(ofDragInfo dragInfo){
-	
 }

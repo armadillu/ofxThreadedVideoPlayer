@@ -12,6 +12,14 @@
 #include "ofMain.h"
 #include "ofxAVFVideoPlayerExtension.h"
 
+class ofxThreadedVideoPlayer;
+
+struct ofxThreadedVideoPlayerStatus{
+	ofxThreadedVideoPlayer* player;
+	bool ready;
+	string path;
+	ofxThreadedVideoPlayerStatus(){ ready = true; player = NULL; }
+};
 
 class ofxThreadedVideoPlayer: public ofThread{
 
@@ -38,25 +46,26 @@ public:
 	float getWidth();
 	float getHeight();
 
-	//use this to supply a method for ofxThreadedVideoPlayer to notify (from the main thread)
-	//whoever you want that the video is ready
-	void setVideoReadyCallback( void (*callBack)(ofxThreadedVideoPlayer*) );
+	//public ofEvent api
+	//call ofAddListener(v->videoIsReadyEvent, this, &testApp::videoIsReadyCallback);
+	//to get notified when the video is ready for playback
+	ofEvent<ofxThreadedVideoPlayerStatus>	videoIsReadyEvent;
 
 private:
 
 	void threadedFunction();
 
-	string videopPath;
-	ofLoopType loopMode;
-	bool loadNow;
-	bool playNow;
-	bool stopNow;
-	bool loaded;
-	ofxAVFVideoPlayerExtension * player;
+	string									videopPath;
+	ofLoopType								loopMode;
+	bool									loadNow;
+	bool									playNow;
+	bool									stopNow;
+	bool									loaded;
+	ofxAVFVideoPlayerExtension *			player;
 
-	void (*callBack)(ofxThreadedVideoPlayer*);
-	bool needToNotifyDelegate;
 
+
+	bool									needToNotifyDelegate;
 };
 
 

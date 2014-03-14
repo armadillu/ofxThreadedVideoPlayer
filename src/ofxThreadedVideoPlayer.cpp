@@ -13,7 +13,6 @@ ofxThreadedVideoPlayer::ofxThreadedVideoPlayer(){
 	player = NULL;
 	loaded = false;
 	loopMode = OF_LOOP_NORMAL;
-	callBack = NULL;
 	needToNotifyDelegate = false;
 }
 
@@ -40,9 +39,6 @@ void ofxThreadedVideoPlayer::setLoopMode(ofLoopType loop){
 }
 
 
-void ofxThreadedVideoPlayer::setVideoReadyCallback( void (*callb)(ofxThreadedVideoPlayer*) ){
-	callBack = callb;
-}
 
 
 
@@ -137,7 +133,10 @@ void ofxThreadedVideoPlayer::draw(float x, float y, bool drawDebug){
 		if( reallyLoaded && tex){
 
 				if(needToNotifyDelegate){ //notify our delegate from the main therad, just in case (draw() always called from main thread)
-					callBack(this); //notify our delegate that the vid is ready
+					ofxThreadedVideoPlayerStatus status;
+					status.path = videopPath;
+					status.player = this;
+					ofNotifyEvent( videoIsReadyEvent, status, this );
 					needToNotifyDelegate = false;
 				}
 				tex->draw(x,y, player->getWidth(), player->getHeight() ); //doing this instead if drawing the player directly to avoid 2 textureUpdate calls (one to see if texture is there, one to draw)

@@ -1,7 +1,7 @@
 #pragma once
 
 #include "ofMain.h"
-#include "ofxTimeMeasurements.h"
+//#include "ofxTimeMeasurements.h"
 #include "ofxThreadedVideoPlayer.h"
 
 class testApp : public ofBaseApp{
@@ -12,18 +12,12 @@ public:
 	void draw();
 
 	void keyPressed(int key);
-	void keyReleased(int key);
-	void mouseMoved(int x, int y );
-	void mouseDragged(int x, int y, int button);
-	void mousePressed(int x, int y, int button);
-	void mouseReleased(int x, int y, int button);
-	void windowResized(int w, int h);
-	void dragEvent(ofDragInfo dragInfo);
-	void gotMessage(ofMessage msg);
 
-	static void videoIsReadyCallback(ofxThreadedVideoPlayer*);
+	void addvideo();
+	void videoIsReadyCallback(ofxThreadedVideoPlayerStatus&);
 
 
+private:
 
 	vector <ofxThreadedVideoPlayer*> videos;
 
