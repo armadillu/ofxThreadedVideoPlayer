@@ -15,6 +15,7 @@ class ofxAVFVideoPlayerExtension : public ofxAVFVideoPlayer{
 
 public:
 
+	virtual ~ofxAVFVideoPlayerExtension();
 	bool isReallyLoaded();
 	bool isTextureReady();
 

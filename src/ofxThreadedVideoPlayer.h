@@ -26,6 +26,7 @@ class ofxThreadedVideoPlayer: public ofThread{
 public:
 
 	ofxThreadedVideoPlayer();
+	~ofxThreadedVideoPlayer();
 
 	void loadVideo(string path);
 	void play();
@@ -38,10 +39,14 @@ public:
 	float getPosition();
 	float getDuration();
 
+	bool isReadyForPlayback();
+
 	ofTexture* getTexture();
 
 	void draw(float x, float y, bool drawDebug = false);
 	void draw(float x, float y, float w, float h);
+	void drawDebug(float x, float y);
+	void update();
 
 	float getWidth();
 	float getHeight();
@@ -62,6 +67,8 @@ private:
 	bool									stopNow;
 	bool									loaded;
 	ofxAVFVideoPlayerExtension *			player;
+	bool									destroying; //if true, a destructor call has been issued
+	bool									readyForPlayback;
 
 
 

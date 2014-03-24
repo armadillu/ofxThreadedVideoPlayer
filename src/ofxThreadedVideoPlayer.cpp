@@ -14,6 +14,16 @@ ofxThreadedVideoPlayer::ofxThreadedVideoPlayer(){
 	loaded = false;
 	loopMode = OF_LOOP_NORMAL;
 	needToNotifyDelegate = false;
+	destroying = false;
+	readyForPlayback = false;
+}
+
+ofxThreadedVideoPlayer::~ofxThreadedVideoPlayer(){
+	destroying = true;
+	cout << "~ofxThreadedVideoPlayer()" << endl;
+	stop();
+	waitForThread();
+	delete player;
 }
 
 void ofxThreadedVideoPlayer::loadVideo(string path){
@@ -39,7 +49,9 @@ void ofxThreadedVideoPlayer::setLoopMode(ofLoopType loop){
 }
 
 
-
+bool ofxThreadedVideoPlayer::isReadyForPlayback(){
+	return readyForPlayback;
+}
 
 
 void ofxThreadedVideoPlayer::threadedFunction(){
@@ -92,9 +104,9 @@ void ofxThreadedVideoPlayer::threadedFunction(){
 			}
 		}
 
-		ofSleepMillis(3); //mm todo!
+		ofSleepMillis(1); //mm todo!
 
-		if (player){
+		if (player && !destroying){
 			if(player->getIsMovieDone() && loopMode == OF_LOOP_NONE){
 				//lock();
 				//player->stop();
@@ -113,17 +125,46 @@ bool ofxThreadedVideoPlayer::hasFinished(){
 	return ret;
 }
 
-void ofxThreadedVideoPlayer::draw(float x, float y, float w, float h){
-	if(player && loaded){
-		if(player->isLoaded()){
-			lock();
-				player->draw(x,y, w, h);
-			unlock();
+void ofxThreadedVideoPlayer::update(){
+
+	lock();
+	if(player){
+		bool reallyLoaded = player->isReallyLoaded();
+		ofTexture * tex = player->getTexture();
+
+		if( reallyLoaded && tex){
+
+			if(needToNotifyDelegate){ //notify our delegate from the main therad, just in case (draw() always called from main thread)
+				ofxThreadedVideoPlayerStatus status;
+				status.path = videopPath;
+				status.player = this;
+				ofNotifyEvent( videoIsReadyEvent, status, this );
+				needToNotifyDelegate = false;
+				readyForPlayback = true;
+			}
 		}
+	}
+	unlock();
+
+}
+
+void ofxThreadedVideoPlayer::draw(float x, float y, float w, float h){
+
+	if(player && loaded){
+		lock();
+		bool reallyLoaded = player->isReallyLoaded();
+		ofTexture * tex = player->getTexture();
+
+		if( reallyLoaded && tex){
+			tex->draw(x,y, w, h ); //doing this instead if drawing the player directly to avoid 2 textureUpdate calls (one to see if texture is there, one to draw)
+		}
+		unlock();
 	}
 }
 
+
 void ofxThreadedVideoPlayer::draw(float x, float y, bool drawDebug){
+
 	if(player && loaded){
 
 		lock();
@@ -131,35 +172,22 @@ void ofxThreadedVideoPlayer::draw(float x, float y, bool drawDebug){
 		ofTexture * tex = player->getTexture();
 
 		if( reallyLoaded && tex){
-
-				if(needToNotifyDelegate){ //notify our delegate from the main therad, just in case (draw() always called from main thread)
-					ofxThreadedVideoPlayerStatus status;
-					status.path = videopPath;
-					status.player = this;
-					ofNotifyEvent( videoIsReadyEvent, status, this );
-					needToNotifyDelegate = false;
-				}
-				tex->draw(x,y, player->getWidth(), player->getHeight() ); //doing this instead if drawing the player directly to avoid 2 textureUpdate calls (one to see if texture is there, one to draw)
-
+			tex->draw(x,y, player->getWidth(), player->getHeight() ); //doing this instead if drawing the player directly to avoid 2 textureUpdate calls (one to see if texture is there, one to draw)
 		}
 		unlock();
-
-		if(drawDebug){
-			string debug =	"isThreadRunning: " + ofToString(isThreadRunning()) + "\n" +
-			"loadNow: " + ofToString(loadNow) + "\n" +
-			"playNow: " + ofToString(playNow) + "\n" +
-			"stopNow: " + ofToString(stopNow) + "\n" +
-			"hasFinished: " + ofToString(hasFinished()) + "\n" +
-			"position: " + ofToString(getPosition()) + "\n" +
-			"loop: " + string(loopMode == OF_LOOP_NONE ? "NO" : "YES") + "\n"
-			;
-
-			ofDrawBitmapString(debug, x + 25, y + 55);
-		}
 	}
 }
 
-
+void ofxThreadedVideoPlayer::drawDebug(float x, float y){
+	string debug =	"isThreadRunning: " + ofToString(isThreadRunning()) + "\n" +
+	"loadNow: " + ofToString(loadNow) + "\n" +
+	"playNow: " + ofToString(playNow) + "\n" +
+	"stopNow: " + ofToString(stopNow) + "\n" +
+	"hasFinished: " + ofToString(hasFinished()) + "\n" +
+	"position: " + ofToString(getPosition()) + "\n" +
+	"loop: " + string(loopMode == OF_LOOP_NONE ? "NO" : "YES") + "\n";
+	ofDrawBitmapString(debug, x + 25, y + 55);
+}
 
 float ofxThreadedVideoPlayer::getWidth(){
 	if(player){

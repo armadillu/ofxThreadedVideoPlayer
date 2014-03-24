@@ -18,7 +18,11 @@ void testApp::setup(){
 }
 
 
-void testApp::update(){}
+void testApp::update(){
+	for(int i = 0; i < videos.size(); i++){
+		videos[i]->update();
+	}
+}
 
 void testApp::videoIsReadyCallback(ofxThreadedVideoPlayerStatus &status){
 
