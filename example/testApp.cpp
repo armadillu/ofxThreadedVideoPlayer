@@ -96,7 +96,7 @@ void testApp::addvideo(){
 	ofxThreadedVideoPlayer * v = new ofxThreadedVideoPlayer();
 	//we want to know when the movie will be ready to play!
 	ofAddListener(v->videoIsReadyEvent, this, &testApp::videoIsReadyCallback);
-	v->loadVideo("chaos_mini_jpg.mov");
+	v->loadVideo("chaos.mov");
 	//v->play();
 	videos.push_back(v);
 }

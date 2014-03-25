@@ -21,7 +21,7 @@ struct ofxThreadedVideoPlayerStatus{
 	ofxThreadedVideoPlayerStatus(){ ready = true; player = NULL; }
 };
 
-class ofxThreadedVideoPlayer: public ofThread{
+class ofxThreadedVideoPlayer{
 
 public:
 
@@ -40,9 +40,6 @@ public:
 	float getDuration();
 
 	bool isReadyForPlayback();
-
-	void markForDeletion(); //call this before deletion
-	bool isReadyToBeDeleted(); //then keep the pointer around, check fro this to be true and delete if it is
 
 	ofTexture* getTexture();
 
@@ -65,15 +62,9 @@ private:
 
 	string									videopPath;
 	ofLoopType								loopMode;
-	bool									loadNow;
-	bool									playNow;
-	bool									stopNow;
 	bool									loaded;
 	ofxAVFVideoPlayerExtension *			player;
 	bool									readyForPlayback;
-
-	bool									pendingDeletion; //if true, wait for thread to finish its pass
-	bool									readyForDeletion; //if ture, object can be deleted by 3rd party
 
 	bool									needToNotifyDelegate;
 };
