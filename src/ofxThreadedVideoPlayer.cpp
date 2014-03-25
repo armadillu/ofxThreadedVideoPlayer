@@ -14,15 +14,13 @@ ofxThreadedVideoPlayer::ofxThreadedVideoPlayer(){
 	loaded = false;
 	loopMode = OF_LOOP_NORMAL;
 	needToNotifyDelegate = false;
-	destroying = false;
+	pendingDeletion = false;
 	readyForPlayback = false;
+	readyForDeletion = false;
 }
 
 ofxThreadedVideoPlayer::~ofxThreadedVideoPlayer(){
-	destroying = true;
 	cout << "~ofxThreadedVideoPlayer()" << endl;
-	stop();
-	waitForThread();
 	delete player;
 }
 
@@ -104,9 +102,7 @@ void ofxThreadedVideoPlayer::threadedFunction(){
 			}
 		}
 
-		ofSleepMillis(1); //mm todo!
-
-		if (player && !destroying){
+		if (player && !pendingDeletion){
 			if(player->getIsMovieDone() && loopMode == OF_LOOP_NONE){
 				//lock();
 				//player->stop();
@@ -114,7 +110,14 @@ void ofxThreadedVideoPlayer::threadedFunction(){
 				stopThread();
 			}
 		}
+
+		if (pendingDeletion){
+			stopThread();
+		}
+
+		ofSleepMillis(1); //mm todo!?
 	}
+	readyForDeletion = true;
 }
 
 bool ofxThreadedVideoPlayer::hasFinished(){
@@ -236,3 +239,17 @@ float ofxThreadedVideoPlayer::getDuration(){
 	}
 	return 0;
 }
+
+
+void ofxThreadedVideoPlayer::markForDeletion(){
+
+	pendingDeletion = true;
+	readyForDeletion = false;
+
+}
+
+
+bool ofxThreadedVideoPlayer::isReadyToBeDeleted(){
+	return readyForDeletion;
+}
+

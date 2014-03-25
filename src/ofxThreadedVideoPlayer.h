@@ -41,6 +41,9 @@ public:
 
 	bool isReadyForPlayback();
 
+	void markForDeletion(); //call this before deletion
+	bool isReadyToBeDeleted(); //then keep the pointer around, check fro this to be true and delete if it is
+
 	ofTexture* getTexture();
 
 	void draw(float x, float y, bool drawDebug = false);
@@ -67,13 +70,12 @@ private:
 	bool									stopNow;
 	bool									loaded;
 	ofxAVFVideoPlayerExtension *			player;
-	bool									destroying; //if true, a destructor call has been issued
 	bool									readyForPlayback;
 
-
+	bool									pendingDeletion; //if true, wait for thread to finish its pass
+	bool									readyForDeletion; //if ture, object can be deleted by 3rd party
 
 	bool									needToNotifyDelegate;
 };
-
 
 #endif
