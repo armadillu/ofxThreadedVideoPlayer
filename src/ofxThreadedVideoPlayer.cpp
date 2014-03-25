@@ -57,6 +57,12 @@ bool ofxThreadedVideoPlayer::isReadyForPlayback(){
 
 void ofxThreadedVideoPlayer::threadedFunction(){
 
+	readyForDeletion = false;
+
+	#ifdef TARGET_OSX
+	pthread_setname_np("ofxThreadedVideoPlayer");
+	#endif
+
 	while(isThreadRunning()){
 
 		if (loadNow){	//////////////////////////// LOAD
@@ -112,18 +118,20 @@ void ofxThreadedVideoPlayer::threadedFunction(){
 		if (player && pendingDeletion){
 			delete player;
 			player = NULL;
+			cout << "ofxThreadedVideoPlayer: deleting internal player!" << endl;
 			stopThread();
 		}
 
 		ofSleepMillis(1); //mm todo!?
 	}
-	readyForDeletion = true;
+
 
 	#if  defined(TARGET_OSX) || defined(TARGET_LINUX) /*I'm not 100% sure of linux*/
 	pthread_detach( pthread_self() ); //this is a workaround for this issue https://github.com/openframeworks/openFrameworks/issues/2506
 	#endif
 
-	//TODO ZOMBIE THREAD FIX!
+	readyForDeletion = true;
+
 }
 
 
@@ -251,9 +259,11 @@ float ofxThreadedVideoPlayer::getDuration(){
 
 void ofxThreadedVideoPlayer::markForDeletion(){
 
+
 	stopNow = true;
 	pendingDeletion = true;
 	readyForDeletion = false;
+	if (!isThreadRunning()) startThread();
 }
 
 
