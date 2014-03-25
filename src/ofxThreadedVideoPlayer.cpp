@@ -17,11 +17,14 @@ ofxThreadedVideoPlayer::ofxThreadedVideoPlayer(){
 	pendingDeletion = false;
 	readyForPlayback = false;
 	readyForDeletion = false;
+	player = new ofxAVFVideoPlayerExtension();
 }
 
 ofxThreadedVideoPlayer::~ofxThreadedVideoPlayer(){
 	cout << "~ofxThreadedVideoPlayer()" << endl;
-	delete player;
+	if ( player ){
+		cout << "ofxThreadedVideoPlayer(): YOU NEED TO CALL markForDeletion() before deleting this object!" << endl;
+	};
 }
 
 void ofxThreadedVideoPlayer::loadVideo(string path){
@@ -57,16 +60,11 @@ void ofxThreadedVideoPlayer::threadedFunction(){
 	while(isThreadRunning()){
 
 		if (loadNow){	//////////////////////////// LOAD
-			lock();
-				if(player){
-					player->stop();
-					delete player;
-				}
-				player = new ofxAVFVideoPlayerExtension();
+			//lock();
 				loaded = player->loadMovie(videopPath);
 				needToNotifyDelegate = true;
 				player->setLoopState(loopMode);
-			unlock();
+			//unlock();
 			loadNow = false;
 		}
 
@@ -111,14 +109,23 @@ void ofxThreadedVideoPlayer::threadedFunction(){
 			}
 		}
 
-		if (pendingDeletion){
+		if (player && pendingDeletion){
+			delete player;
+			player = NULL;
 			stopThread();
 		}
 
 		ofSleepMillis(1); //mm todo!?
 	}
 	readyForDeletion = true;
+
+	#if  defined(TARGET_OSX) || defined(TARGET_LINUX) /*I'm not 100% sure of linux*/
+	pthread_detach( pthread_self() ); //this is a workaround for this issue https://github.com/openframeworks/openFrameworks/issues/2506
+	#endif
+
+	//TODO ZOMBIE THREAD FIX!
 }
+
 
 bool ofxThreadedVideoPlayer::hasFinished(){
 	bool ret = false;
@@ -127,6 +134,7 @@ bool ofxThreadedVideoPlayer::hasFinished(){
 	unlock();
 	return ret;
 }
+
 
 void ofxThreadedVideoPlayer::update(){
 
@@ -243,9 +251,9 @@ float ofxThreadedVideoPlayer::getDuration(){
 
 void ofxThreadedVideoPlayer::markForDeletion(){
 
+	stopNow = true;
 	pendingDeletion = true;
 	readyForDeletion = false;
-
 }
 
 
