@@ -66,11 +66,11 @@ void ofxThreadedVideoPlayer::threadedFunction(){
 	while(isThreadRunning()){
 
 		if (loadNow){	//////////////////////////// LOAD
-			//lock();
+			lock();
 				loaded = player->loadMovie(videopPath);
 				needToNotifyDelegate = true;
 				player->setLoopState(loopMode);
-			//unlock();
+			unlock();
 			loadNow = false;
 		}
 
@@ -89,13 +89,15 @@ void ofxThreadedVideoPlayer::threadedFunction(){
 		if (playNow){	///////////////////////////// PLAY
 			if(loaded){
 				lock();
-				player->setPaused(false);
+//				if (player->isPaused()){
+//					player->setPaused(false);
+//				}
 				player->play();
+				playNow = false;
 				unlock();
 			}else{
 				cout << "can't play before we load a movie!" << endl;
 			}
-			playNow = false;
 		}
 
 		if(player){
@@ -125,13 +127,22 @@ void ofxThreadedVideoPlayer::threadedFunction(){
 		ofSleepMillis(1); //mm todo!?
 	}
 
-
 	#if  defined(TARGET_OSX) || defined(TARGET_LINUX) /*I'm not 100% sure of linux*/
 	pthread_detach( pthread_self() ); //this is a workaround for this issue https://github.com/openframeworks/openFrameworks/issues/2506
 	#endif
 
 	readyForDeletion = true;
+}
 
+
+void ofxThreadedVideoPlayer::markForDeletion(){
+
+	stopNow = true;
+	pendingDeletion = true;
+	readyForDeletion = false;
+	if (!isThreadRunning()){
+		startThread();
+	}
 }
 
 
@@ -164,8 +175,8 @@ void ofxThreadedVideoPlayer::update(){
 		}
 	}
 	unlock();
-
 }
+
 
 void ofxThreadedVideoPlayer::draw(float x, float y, float w, float h){
 
@@ -254,16 +265,6 @@ float ofxThreadedVideoPlayer::getDuration(){
 		return d;
 	}
 	return 0;
-}
-
-
-void ofxThreadedVideoPlayer::markForDeletion(){
-
-
-	stopNow = true;
-	pendingDeletion = true;
-	readyForDeletion = false;
-	if (!isThreadRunning()) startThread();
 }
 
 
