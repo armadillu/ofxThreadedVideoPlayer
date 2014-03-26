@@ -18,7 +18,7 @@ ofxThreadedVideoPlayer::ofxThreadedVideoPlayer(){
 }
 
 ofxThreadedVideoPlayer::~ofxThreadedVideoPlayer(){
-	cout << "~ofxThreadedVideoPlayer()" << endl;
+	//cout << "~ofxThreadedVideoPlayer()" << endl;
 	if ( player ){
 		delete player;
 	};
