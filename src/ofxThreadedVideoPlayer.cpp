@@ -73,12 +73,17 @@ void ofxThreadedVideoPlayer::update(){
 	//lock();
 	if(player){
 
+
 		bool reallyLoaded = player->isReallyLoaded();
+
+		if (reallyLoaded){
+			player->update();
+		}
+
 		ofTexture * tex = player->getTexture();
 
 		if( reallyLoaded && tex){
 
-			player->update();
 
 			if(needToNotifyDelegate){ //notify our delegate from the main therad, just in case (draw() always called from main thread)
 				ofxThreadedVideoPlayerStatus status;
