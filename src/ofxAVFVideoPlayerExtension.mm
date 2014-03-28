@@ -10,7 +10,7 @@
 #include "ofxAVFVideoPlayerExtension.h"
 
 ofxAVFVideoPlayerExtension::~ofxAVFVideoPlayerExtension(){
-	cout << "deleting ofxAVFVideoPlayerExtension" << endl;
+	//cout << "deleting ofxAVFVideoPlayerExtension" << endl;
 }
 
 bool ofxAVFVideoPlayerExtension::isReallyLoaded(){
