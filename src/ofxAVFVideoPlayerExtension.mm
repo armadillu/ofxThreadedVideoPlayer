@@ -20,5 +20,5 @@ bool ofxAVFVideoPlayerExtension::isReallyLoaded(){
 
 
 bool ofxAVFVideoPlayerExtension::isTextureReady(){
-	return moviePlayer.textureAllocated;
+	return [moviePlayer textureAllocated];
 }

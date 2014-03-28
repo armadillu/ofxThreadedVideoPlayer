@@ -28,6 +28,8 @@ public:
 	ofxThreadedVideoPlayer();
 	~ofxThreadedVideoPlayer();
 
+	static int getNumInstances();
+
 	void loadVideo(string path);
 	void play();
 	void stop();

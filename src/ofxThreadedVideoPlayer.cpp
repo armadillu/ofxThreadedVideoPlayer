@@ -8,6 +8,8 @@
 
 #include "ofxThreadedVideoPlayer.h"
 
+static int num_ofxThreadedVideoPlayer = 0;
+
 ofxThreadedVideoPlayer::ofxThreadedVideoPlayer(){
 	player = NULL;
 	loaded = false;
@@ -15,13 +17,21 @@ ofxThreadedVideoPlayer::ofxThreadedVideoPlayer(){
 	needToNotifyDelegate = false;
 	readyForPlayback = false;
 	player = new ofxAVFVideoPlayerExtension();
+	num_ofxThreadedVideoPlayer ++;
 }
 
 ofxThreadedVideoPlayer::~ofxThreadedVideoPlayer(){
 	cout << "~ofxThreadedVideoPlayer()" << endl;
 	if ( player ){
-		delete player;
+		ofxAVFVideoPlayerExtension * temp = player;
+		player = NULL;
+		delete temp;
 	};
+	num_ofxThreadedVideoPlayer--;
+}
+
+int ofxThreadedVideoPlayer::getNumInstances(){
+	return num_ofxThreadedVideoPlayer;
 }
 
 void ofxThreadedVideoPlayer::loadVideo(string path){
@@ -68,7 +78,6 @@ bool ofxThreadedVideoPlayer::hasFinished(){
 
 
 void ofxThreadedVideoPlayer::update(){
-
 
 	//lock();
 	if(player){
