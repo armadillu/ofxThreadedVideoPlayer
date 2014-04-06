@@ -134,6 +134,20 @@ void ofxThreadedVideoPlayer::draw(float x, float y, bool drawDebug){
 	}
 }
 
+ofTexture * ofxThreadedVideoPlayer::getTexture(){
+
+	if(player && loaded){
+
+		bool reallyLoaded = player->isReallyLoaded();
+		ofTexture * tex = player->getTexture();
+
+		if( reallyLoaded && tex){
+			return tex;
+		}
+	}
+	return NULL;
+}
+
 void ofxThreadedVideoPlayer::drawDebug(float x, float y){
 	string debug =	string("") +
 	"hasFinished: " + ofToString(hasFinished()) + "\n" +
