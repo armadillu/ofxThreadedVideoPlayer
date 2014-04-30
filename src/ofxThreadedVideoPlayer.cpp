@@ -30,6 +30,12 @@ ofxThreadedVideoPlayer::~ofxThreadedVideoPlayer(){
 	num_ofxThreadedVideoPlayer--;
 }
 
+string ofxThreadedVideoPlayer::getPath(){
+	return videopPath;
+}
+
+
+
 int ofxThreadedVideoPlayer::getNumInstances(){
 	return num_ofxThreadedVideoPlayer;
 }

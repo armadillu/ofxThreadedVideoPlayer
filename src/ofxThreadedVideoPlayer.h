@@ -53,6 +53,7 @@ public:
 	float getWidth();
 	float getHeight();
 
+	string getPath();
 	//public ofEvent api
 	//call ofAddListener(v->videoIsReadyEvent, this, &testApp::videoIsReadyCallback);
 	//to get notified when the video is ready for playback
