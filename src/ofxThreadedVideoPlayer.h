@@ -41,6 +41,8 @@ public:
 	float getPosition();
 	float getDuration();
 
+	void setVolume(float v);
+
 	bool isReadyForPlayback();
 
 	ofTexture* getTexture();

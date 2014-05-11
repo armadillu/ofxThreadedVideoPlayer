@@ -34,6 +34,12 @@ string ofxThreadedVideoPlayer::getPath(){
 	return videopPath;
 }
 
+void ofxThreadedVideoPlayer::setVolume(float v){
+	if(player){
+		player->setVolume(v);
+	}
+}
+
 
 
 int ofxThreadedVideoPlayer::getNumInstances(){
