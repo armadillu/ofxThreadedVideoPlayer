@@ -23,4 +23,6 @@ private:
 
 	int selectedVideo;
 	bool debug;
+
+	ofMutex mutex;
 };

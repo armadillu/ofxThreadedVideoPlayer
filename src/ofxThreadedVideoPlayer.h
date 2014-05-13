@@ -11,7 +11,9 @@
 
 #include "ofMain.h"
 #include "ofxAVFVideoPlayerExtension.h"
+#include "ofxThreadedVideoGC.h"
 
+class ofxThreadedVideoGC;
 class ofxThreadedVideoPlayer;
 
 struct ofxThreadedVideoPlayerStatus{
@@ -23,10 +25,11 @@ struct ofxThreadedVideoPlayerStatus{
 
 class ofxThreadedVideoPlayer{
 
+	friend class ofxThreadedVideoGC;
+
 public:
 
 	ofxThreadedVideoPlayer();
-	~ofxThreadedVideoPlayer();
 
 	static int getNumInstances();
 
@@ -56,6 +59,12 @@ public:
 	float getHeight();
 
 	string getPath();
+
+	void deleteMe(); //once you call this on yor object, dont access the
+					//pointer to your object anymore, or you will get a crash.
+					//ofxThreadedVideoGC will delete it in a bg thread
+					//making sure the app doesnt stutter
+
 	//public ofEvent api
 	//call ofAddListener(v->videoIsReadyEvent, this, &testApp::videoIsReadyCallback);
 	//to get notified when the video is ready for playback
@@ -63,6 +72,7 @@ public:
 
 private:
 
+	~ofxThreadedVideoPlayer(); //dont destruct this object directly!
 	void threadedFunction();
 
 	string									videopPath;
@@ -72,6 +82,7 @@ private:
 	bool									readyForPlayback;
 
 	bool									needToNotifyDelegate;
+
 };
 
 #endif

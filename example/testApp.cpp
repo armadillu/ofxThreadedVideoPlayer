@@ -11,17 +11,17 @@ void testApp::setup(){
 	ofBackground(22);
 	ofSetLineWidth(2);
 
-	//TIME_SAMPLE_SET_FRAMERATE(60);
-
 	selectedVideo = -1;
 	debug = false;
 }
 
 
 void testApp::update(){
+	mutex.lock();
 	for(int i = 0; i < videos.size(); i++){
 		videos[i]->update();
 	}
+	mutex.unlock();
 }
 
 void testApp::videoIsReadyCallback(ofxThreadedVideoPlayerStatus &status){
@@ -42,6 +42,7 @@ void testApp::draw(){
 
 		ofScale(scale, scale);
 
+		mutex.lock();
 		for(int i = 0; i < videos.size(); i++){
 
 			ofPushMatrix();
@@ -63,6 +64,7 @@ void testApp::draw(){
 			ofPopMatrix();
 
 		}
+		mutex.unlock();
 	ofPopMatrix();
 
 	ofDrawBitmapString("numPlayers: " + ofToString(videos.size()), 8, 140);
@@ -145,6 +147,19 @@ void testApp::keyPressed(int key){
 		}break;
 
 		case 'd': debug = !debug; break;
+
+		case 'D':{
+
+			mutex.lock();
+			if(videos.size()){
+				ofxThreadedVideoPlayer* p = videos[0];
+				videos.erase(videos.begin());
+				p->deleteMe();
+				p = NULL;
+			}
+			mutex.unlock();
+			
+		}break;
 
 		default:
 			break;

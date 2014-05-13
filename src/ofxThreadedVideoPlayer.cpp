@@ -41,6 +41,10 @@ void ofxThreadedVideoPlayer::setVolume(float v){
 }
 
 
+void ofxThreadedVideoPlayer::deleteMe(){
+
+	ofxThreadedVideoGC::instance()->addToGarbageQueue(this);
+}
 
 int ofxThreadedVideoPlayer::getNumInstances(){
 	return num_ofxThreadedVideoPlayer;
