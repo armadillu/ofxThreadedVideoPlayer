@@ -32,12 +32,17 @@ void ofxThreadedVideoGC::threadedFunction(){
 	while (isThreadRunning()) {
 		sleep(1);
 		lock();
+		ofxThreadedVideoPlayer * toDel = NULL;
 		if(videosPendingDeletion.size()){
 			cout << ">> about to delete"<< endl;
-			delete videosPendingDeletion[0];
+			toDel = videosPendingDeletion[0];
 			cout << ">> deleted!"<< endl<< endl;
 			videosPendingDeletion.erase(videosPendingDeletion.begin());
 		}
 		unlock();
+		if (toDel){ //we do this to avoid blocking the main thread inside the mutex
+					//as this is the "long" call
+			delete toDel;
+		}
 	}
 }
