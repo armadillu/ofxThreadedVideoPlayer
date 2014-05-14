@@ -30,10 +30,12 @@ void ofxThreadedVideoGC::addToGarbageQueue(ofxThreadedVideoPlayer*p){
 void ofxThreadedVideoGC::threadedFunction(){
 
 	while (isThreadRunning()) {
-		sleep(2);
+		sleep(1);
 		lock();
 		if(videosPendingDeletion.size()){
+			cout << ">> about to delete"<< endl;
 			delete videosPendingDeletion[0];
+			cout << ">> deleted!"<< endl<< endl;
 			videosPendingDeletion.erase(videosPendingDeletion.begin());
 		}
 		unlock();
