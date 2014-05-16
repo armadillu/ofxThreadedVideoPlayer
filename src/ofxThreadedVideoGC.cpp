@@ -34,9 +34,9 @@ void ofxThreadedVideoGC::threadedFunction(){
 		lock();
 		ofxThreadedVideoPlayer * toDel = NULL;
 		if(videosPendingDeletion.size()){
-			cout << ">> about to delete"<< endl;
+			//cout << ">> about to delete"<< endl;
 			toDel = videosPendingDeletion[0];
-			cout << ">> deleted!"<< endl<< endl;
+			//cout << ">> deleted!"<< endl<< endl;
 			videosPendingDeletion.erase(videosPendingDeletion.begin());
 		}
 		unlock();
