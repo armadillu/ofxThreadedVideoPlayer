@@ -69,10 +69,10 @@ public:
 	//call ofAddListener(v->videoIsReadyEvent, this, &testApp::videoIsReadyCallback);
 	//to get notified when the video is ready for playback
 	ofEvent<ofxThreadedVideoPlayerStatus>	videoIsReadyEvent;
+	~ofxThreadedVideoPlayer(); //dont destruct this object directly!
 
 private:
 
-	~ofxThreadedVideoPlayer(); //dont destruct this object directly!
 	void threadedFunction();
 
 	string									videopPath;
