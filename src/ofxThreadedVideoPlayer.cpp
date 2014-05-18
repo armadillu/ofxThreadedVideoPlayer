@@ -30,6 +30,24 @@ ofxThreadedVideoPlayer::~ofxThreadedVideoPlayer(){
 	num_ofxThreadedVideoPlayer--;
 }
 
+
+void ofxThreadedVideoPlayer::threadedFunction(){
+
+	dispatch_async( dispatch_get_global_queue( DISPATCH_QUEUE_PRIORITY_LOW, 0 ), ^{
+		loaded = player->loadMovie(videopPath);
+		player->setLoopState(loopMode);
+		needToNotifyDelegate = true;
+	}
+   );
+	ofSleepMillis(30);
+
+	stopThread();
+	#if  defined(TARGET_OSX) || defined(TARGET_LINUX) /*I'm not 100% sure of linux*/
+	pthread_detach( pthread_self() ); //this is a workaround for this issue https://github.com/openframeworks/openFrameworks/issues/2506
+	#endif
+}
+
+
 string ofxThreadedVideoPlayer::getPath(){
 	return videopPath;
 }
@@ -51,10 +69,10 @@ int ofxThreadedVideoPlayer::getNumInstances(){
 }
 
 void ofxThreadedVideoPlayer::loadVideo(string path){
-	videopPath = path;
-	loaded = player->loadMovie(videopPath);
-	player->setLoopState(loopMode);
-	needToNotifyDelegate = true;
+	if(!isThreadRunning()){
+		videopPath = path;
+		startThread();
+	}
 }
 
 void ofxThreadedVideoPlayer::play(){

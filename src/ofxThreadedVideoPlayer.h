@@ -23,7 +23,7 @@ struct ofxThreadedVideoPlayerStatus{
 	ofxThreadedVideoPlayerStatus(){ ready = true; player = NULL; }
 };
 
-class ofxThreadedVideoPlayer{
+class ofxThreadedVideoPlayer: public ofThread{
 
 	friend class ofxThreadedVideoGC;
 
