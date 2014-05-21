@@ -11,18 +11,18 @@
 static int num_ofxThreadedVideoPlayer = 0;
 
 ofxThreadedVideoPlayer::ofxThreadedVideoPlayer(){
-	player = NULL;
+	player = new ofxAVFVideoPlayerExtension();
 	loaded = false;
 	loopMode = OF_LOOP_NORMAL;
 	needToNotifyDelegate = false;
 	readyForPlayback = false;
-	player = new ofxAVFVideoPlayerExtension();
 	num_ofxThreadedVideoPlayer ++;
 	needsPlayback = false;
+	ofLogWarning() << "new ofxThreadedVideoPlayer() " << this;
 }
 
 ofxThreadedVideoPlayer::~ofxThreadedVideoPlayer(){
-	//cout << "~ofxThreadedVideoPlayer()" << endl;
+	cout << "~ofxThreadedVideoPlayer()"<< this << endl;
 	if ( player ){
 		ofxAVFVideoPlayerExtension * temp = player;
 		player = NULL;
@@ -43,7 +43,7 @@ void ofxThreadedVideoPlayer::setVolume(float v){
 
 
 void ofxThreadedVideoPlayer::deleteMe(){
-
+	ofLogWarning() << "ofxThreadedVideoPlayer:deleteMe() " << this << endl;
 	ofxThreadedVideoGC::instance()->addToGarbageQueue(this);
 }
 
@@ -60,7 +60,9 @@ void ofxThreadedVideoPlayer::loadVideo(string path){
 
 void ofxThreadedVideoPlayer::play(){
 	if(loaded){
-		player->setPaused(false);
+		if(player){
+			player->setPaused(false);
+		}
 		//player->play();
 	}else{
 
@@ -71,7 +73,9 @@ void ofxThreadedVideoPlayer::play(){
 
 void ofxThreadedVideoPlayer::stop(){
 	//stopNow = true;
-	player->setPaused(true);
+	if (player){
+		player->setPaused(true);
+	}
 	//player->stop();
 }
 
@@ -92,7 +96,10 @@ bool ofxThreadedVideoPlayer::isReadyForPlayback(){
 
 bool ofxThreadedVideoPlayer::hasFinished(){
 	bool ret = false;
-	ret = player->getIsMovieDone();
+	if (player){
+		ret = player->getIsMovieDone();
+	}
+
 	return ret;
 }
 
