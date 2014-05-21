@@ -60,7 +60,7 @@ void ofxThreadedVideoPlayer::loadVideo(string path){
 void ofxThreadedVideoPlayer::play(){
 	if(loaded){
 		player->setPaused(false);
-		player->play();
+		//player->play();
 	}else{
 		cout << "can't play before we load a movie!" << endl;
 	}
@@ -69,6 +69,7 @@ void ofxThreadedVideoPlayer::play(){
 void ofxThreadedVideoPlayer::stop(){
 	//stopNow = true;
 	player->setPaused(true);
+	//player->stop();
 }
 
 void ofxThreadedVideoPlayer::setLoopMode(ofLoopType loop){
@@ -105,20 +106,21 @@ void ofxThreadedVideoPlayer::update(){
 			player->update();
 		}
 
-		ofTexture * tex = player->getTexture();
+		//if (player->isPlaying()){
+			ofTexture * tex = player->getTexture();
 
-		if( reallyLoaded && tex){
+			if( reallyLoaded && tex){
 
-
-			if(needToNotifyDelegate){ //notify our delegate from the main therad, just in case (draw() always called from main thread)
-				ofxThreadedVideoPlayerStatus status;
-				status.path = videopPath;
-				status.player = this;
-				ofNotifyEvent( videoIsReadyEvent, status, this );
-				needToNotifyDelegate = false;
-				readyForPlayback = true;
+				if(needToNotifyDelegate){ //notify our delegate from the main therad, just in case (draw() always called from main thread)
+					ofxThreadedVideoPlayerStatus status;
+					status.path = videopPath;
+					status.player = this;
+					ofNotifyEvent( videoIsReadyEvent, status, this );
+					needToNotifyDelegate = false;
+					readyForPlayback = true;
+				}
 			}
-		}
+		//}
 	}
 	//unlock();
 }
@@ -190,8 +192,8 @@ float ofxThreadedVideoPlayer::getHeight(){
 
 void ofxThreadedVideoPlayer::setPosition(float percent){
 	if(player){
-		player->stop();
-		player->play();
+//		player->stop();
+//		player->play();
 		player->setPosition( ofClamp(percent,0.0f,1.0f) );
 	}
 }
