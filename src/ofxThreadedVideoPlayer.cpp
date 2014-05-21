@@ -18,6 +18,7 @@ ofxThreadedVideoPlayer::ofxThreadedVideoPlayer(){
 	readyForPlayback = false;
 	player = new ofxAVFVideoPlayerExtension();
 	num_ofxThreadedVideoPlayer ++;
+	needsPlayback = false;
 }
 
 ofxThreadedVideoPlayer::~ofxThreadedVideoPlayer(){
@@ -62,7 +63,9 @@ void ofxThreadedVideoPlayer::play(){
 		player->setPaused(false);
 		//player->play();
 	}else{
-		cout << "can't play before we load a movie!" << endl;
+
+		needsPlayback = true;
+		cout << "queuing that playback command as movie is not ready yet" << endl;
 	}
 }
 
@@ -103,6 +106,10 @@ void ofxThreadedVideoPlayer::update(){
 		bool reallyLoaded = player->isReallyLoaded();
 
 		if (reallyLoaded){
+			if (needsPlayback){
+				needsPlayback = false;
+				player->setPaused(false);
+			}
 			player->update();
 		}
 

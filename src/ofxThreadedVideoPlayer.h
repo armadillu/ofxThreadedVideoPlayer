@@ -82,6 +82,7 @@ private:
 	bool									readyForPlayback;
 
 	bool									needToNotifyDelegate;
+	bool									needsPlayback;
 
 };
 
