@@ -18,11 +18,11 @@ ofxThreadedVideoPlayer::ofxThreadedVideoPlayer(){
 	readyForPlayback = false;
 	num_ofxThreadedVideoPlayer ++;
 	needsPlayback = false;
-	ofLogWarning() << "new ofxThreadedVideoPlayer() " << this;
+	//ofLogWarning() << "new ofxThreadedVideoPlayer() " << this;
 }
 
 ofxThreadedVideoPlayer::~ofxThreadedVideoPlayer(){
-	cout << "~ofxThreadedVideoPlayer()"<< this << endl;
+	//cout << "~ofxThreadedVideoPlayer()"<< this << endl;
 	if ( player ){
 		ofxAVFVideoPlayerExtension * temp = player;
 		player = NULL;
@@ -43,7 +43,7 @@ void ofxThreadedVideoPlayer::setVolume(float v){
 
 
 void ofxThreadedVideoPlayer::deleteMe(){
-	ofLogWarning() << "ofxThreadedVideoPlayer:deleteMe() " << this << endl;
+	//ofLogWarning() << "ofxThreadedVideoPlayer:deleteMe() " << this << endl;
 	ofxThreadedVideoGC::instance()->addToGarbageQueue(this);
 }
 
