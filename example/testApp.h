@@ -20,7 +20,15 @@ public:
 private:
 
 	vector <ofxThreadedVideoPlayer*> videos;
+	vector <ofxThreadedVideoPlayer*> videosPendingDeletion;
 
 	int selectedVideo;
-	bool debug;
+	int numPlayersCreated;
+	int numPlayersDeleted;
+
+	ofMutex mutex;
+
+	bool autoPilot; //will add a video every now and then
+					//and delete one too.
+					//used to check for crashes / leaks
 };

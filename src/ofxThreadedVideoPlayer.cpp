@@ -11,17 +11,18 @@
 static int num_ofxThreadedVideoPlayer = 0;
 
 ofxThreadedVideoPlayer::ofxThreadedVideoPlayer(){
-	player = NULL;
+	player = new ofxAVFVideoPlayerExtension();
 	loaded = false;
 	loopMode = OF_LOOP_NORMAL;
 	needToNotifyDelegate = false;
 	readyForPlayback = false;
-	player = new ofxAVFVideoPlayerExtension();
 	num_ofxThreadedVideoPlayer ++;
+	needsPlayback = false;
+	//ofLogWarning() << "new ofxThreadedVideoPlayer() " << this;
 }
 
 ofxThreadedVideoPlayer::~ofxThreadedVideoPlayer(){
-	//cout << "~ofxThreadedVideoPlayer()" << endl;
+	//cout << "~ofxThreadedVideoPlayer()"<< this << endl;
 	if ( player ){
 		ofxAVFVideoPlayerExtension * temp = player;
 		player = NULL;
@@ -41,6 +42,10 @@ void ofxThreadedVideoPlayer::setVolume(float v){
 }
 
 
+void ofxThreadedVideoPlayer::deleteMe(){
+	//ofLogWarning() << "ofxThreadedVideoPlayer:deleteMe() " << this << endl;
+	ofxThreadedVideoGC::instance()->addToGarbageQueue(this);
+}
 
 int ofxThreadedVideoPlayer::getNumInstances(){
 	return num_ofxThreadedVideoPlayer;
@@ -55,16 +60,23 @@ void ofxThreadedVideoPlayer::loadVideo(string path){
 
 void ofxThreadedVideoPlayer::play(){
 	if(loaded){
-		player->setPaused(false);
-		player->play();
+		if(player){
+			player->setPaused(false);
+		}
+		//player->play();
 	}else{
-		cout << "can't play before we load a movie!" << endl;
+
+		needsPlayback = true;
+		cout << "queuing that playback command as movie is not ready yet" << endl;
 	}
 }
 
 void ofxThreadedVideoPlayer::stop(){
 	//stopNow = true;
-	player->setPaused(true);
+	if (player){
+		player->setPaused(true);
+	}
+	//player->stop();
 }
 
 void ofxThreadedVideoPlayer::setLoopMode(ofLoopType loop){
@@ -84,7 +96,10 @@ bool ofxThreadedVideoPlayer::isReadyForPlayback(){
 
 bool ofxThreadedVideoPlayer::hasFinished(){
 	bool ret = false;
-	ret = player->getIsMovieDone();
+	if (player){
+		ret = player->getIsMovieDone();
+	}
+
 	return ret;
 }
 
@@ -98,23 +113,28 @@ void ofxThreadedVideoPlayer::update(){
 		bool reallyLoaded = player->isReallyLoaded();
 
 		if (reallyLoaded){
+			if (needsPlayback){
+				needsPlayback = false;
+				player->setPaused(false);
+			}
 			player->update();
 		}
 
-		ofTexture * tex = player->getTexture();
+		//if (player->isPlaying()){
+			ofTexture * tex = player->getTexture();
 
-		if( reallyLoaded && tex){
+			if( reallyLoaded && tex){
 
-
-			if(needToNotifyDelegate){ //notify our delegate from the main therad, just in case (draw() always called from main thread)
-				ofxThreadedVideoPlayerStatus status;
-				status.path = videopPath;
-				status.player = this;
-				ofNotifyEvent( videoIsReadyEvent, status, this );
-				needToNotifyDelegate = false;
-				readyForPlayback = true;
+				if(needToNotifyDelegate){ //notify our delegate from the main therad, just in case (draw() always called from main thread)
+					ofxThreadedVideoPlayerStatus status;
+					status.path = videopPath;
+					status.player = this;
+					ofNotifyEvent( videoIsReadyEvent, status, this );
+					needToNotifyDelegate = false;
+					readyForPlayback = true;
+				}
 			}
-		}
+		//}
 	}
 	//unlock();
 }
@@ -133,7 +153,7 @@ void ofxThreadedVideoPlayer::draw(float x, float y, float w, float h){
 }
 
 
-void ofxThreadedVideoPlayer::draw(float x, float y, bool drawDebug){
+void ofxThreadedVideoPlayer::draw(float x, float y){
 
 	if(player && loaded){
 
@@ -186,8 +206,8 @@ float ofxThreadedVideoPlayer::getHeight(){
 
 void ofxThreadedVideoPlayer::setPosition(float percent){
 	if(player){
-		player->stop();
-		player->play();
+//		player->stop();
+//		player->play();
 		player->setPosition( ofClamp(percent,0.0f,1.0f) );
 	}
 }
