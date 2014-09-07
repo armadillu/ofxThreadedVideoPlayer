@@ -12,21 +12,21 @@ void testApp::setup(){
 	ofSetLineWidth(2);
 
 	selectedVideo = -1;
-
 	numPlayersCreated = numPlayersDeleted = 0;
 	autoPilot = true;
 
 	#ifdef TARGET_OSX
-	//Enable the OPEN_GL multi-threading, not sure what this really does! TODO!
-	CGLError err;
-	CGLContextObj ctx = CGLGetCurrentContext();
-	err =  CGLEnable( ctx, kCGLCEMPEngine);
+//	//Enable the OPEN_GL multi-threading, not sure what this really does! TODO!
+//	CGLError err;
+//	CGLContextObj ctx = CGLGetCurrentContext();
+//	err =  CGLEnable( ctx, kCGLCEMPEngine);
 	#endif
 
 }
 
 
 void testApp::update(){
+
 	mutex.lock();
 	for(int i = 0; i < videos.size(); i++){
 		videos[i]->update();
@@ -35,12 +35,12 @@ void testApp::update(){
 
 	if(autoPilot){
 		if (videos.size() < 10){
-			if(ofGetFrameNum()%10 == (int)floor(ofRandom(3))){
+			if(ofGetFrameNum()%35 == (int)floor(ofRandom(3))){
 				keyPressed(' ');
 			}
 		}
 
-		if(ofGetFrameNum()%20 == 1){
+		if(ofGetFrameNum()%40 == 1){
 			keyPressed('D');
 		}
 	}
@@ -69,15 +69,16 @@ void testApp::draw(){
 
 			ofPushMatrix();
 				ofTranslate(x, y);
-				videos[i]->draw(0,0, false);
-				if(i==selectedVideo){
+				videos[i]->draw(0,0);
+
+			if(i==selectedVideo){
 					ofNoFill();
 					ofSetColor(255,0,0);
 					ofRect(0, 0, videos[i]->getWidth(), videos[i]->getHeight());
-					ofSetColor(255);
 					ofFill();
+					ofSetColor(255);
 				}
-			
+
 				x += videos[i]->getWidth();
 				if (x * scale > ofGetWidth()){
 					x = 0;
@@ -119,10 +120,8 @@ void testApp::draw(){
 								"'L' to enable loop on selected video\n"
 								"'r' to rewind on selected video\n"
 								"'f' to fastForward selected video\n"
-								"'d' to toggle debug\n"
 								"'D' to delete first video\n"
-								"'A' toggle Auto Pilot"
-								,
+								"'A' toggle Auto Pilot",
 								20,
 								ofGetHeight() - 160
 								);

@@ -153,7 +153,7 @@ void ofxThreadedVideoPlayer::draw(float x, float y, float w, float h){
 }
 
 
-void ofxThreadedVideoPlayer::draw(float x, float y, bool drawDebug){
+void ofxThreadedVideoPlayer::draw(float x, float y){
 
 	if(player && loaded){
 

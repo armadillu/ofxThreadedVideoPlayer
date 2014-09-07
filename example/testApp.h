@@ -20,6 +20,7 @@ public:
 private:
 
 	vector <ofxThreadedVideoPlayer*> videos;
+	vector <ofxThreadedVideoPlayer*> videosPendingDeletion;
 
 	int selectedVideo;
 	int numPlayersCreated;

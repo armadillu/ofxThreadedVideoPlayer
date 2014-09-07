@@ -1,4 +1,5 @@
-OSX-only video playback addon based on ofxAVFVideoPlayer. Allows to load movies on the fly in a background thread without hicups, each movie instance is updates in its own thread. I get around 40 720p movie clips playing nicely, leaving room for the main thread to do other things.
+OSX-only video playback addon based on ofxAVFVideoPlayer. Allows to load movies on the fly in a background thread without hiccups.
 
-it requires this:
-https://github.com/obviousjim/ofxAVFVideoPlayer
+The main goal while creating this was to minimize the stuttering that happens when loading / unloading ofxAVFVideoPlayer videos on the fly as the app runs. 
+
+it requires OSX, libc++.dylib, AVFoundation.framework, QuartzCore.framework, and CoreMedia.framework.

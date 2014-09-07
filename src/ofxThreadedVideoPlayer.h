@@ -50,7 +50,7 @@ public:
 
 	ofTexture* getTexture();
 
-	void draw(float x, float y, bool drawDebug = false);
+	void draw(float x, float y);
 	void draw(float x, float y, float w, float h);
 	void drawDebug(float x, float y);
 	void update();
